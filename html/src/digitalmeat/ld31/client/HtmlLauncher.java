@@ -3,7 +3,7 @@ package digitalmeat.ld31.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import digitalmeat.ld31.MyGdxGame;
+import digitalmeat.ld31.Game;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener getApplicationListener () {
-                return new MyGdxGame();
+                return new Game();
         }
 }
