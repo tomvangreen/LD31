@@ -18,7 +18,6 @@ public class Tile extends Actor {
 	public final Color tempColor = new Color();
 	public TileType type = TileType.Empty;
 	public boolean dropped;
-	private boolean dropping;
 
 	public Tile(Texture texture) {
 		this.sprite = new Sprite(texture);
@@ -109,7 +108,7 @@ public class Tile extends Actor {
 	}
 
 	public static enum TileType {
-		Empty(false), Start(true), Food(true), Key(true), Door(true, true);
+		Empty(false), Walkable(true), Start(true), Food(true), Key(true), Door(true, true);
 		public final boolean walkable;
 		public final boolean locked;
 
@@ -118,7 +117,7 @@ public class Tile extends Actor {
 		}
 
 		TileType(boolean walkable, boolean locked) {
-			this.walkable = true;
+			this.walkable = walkable;
 			this.locked = locked;
 		}
 	}

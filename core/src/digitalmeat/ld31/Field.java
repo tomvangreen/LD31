@@ -90,6 +90,8 @@ public class Field {
 			for (int x = 0; x < table.width; x++) {
 				Tile tile = table.get(x, y);
 				tile.targetColor.set(getTargetColor(level, x, y));
+				TileConfig config = level.table.get(x, y);
+				tile.type = config.type;
 			}
 		}
 		fadeIn();

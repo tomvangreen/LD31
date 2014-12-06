@@ -92,16 +92,17 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void createIntroSequence() {
-		fades.add(new KeyAndDelay("title", 0.5f));
-		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay("entire_game", 3f));
-		// fades.add(new KeyAndDelay("game", 2.5f));
-		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
-		// fades.add(new KeyAndDelay("one", 2.5f));
-		// fades.add(new KeyAndDelay("screen", 2.5f));
-		fades.add(new KeyAndDelay(null, 3f));
+		// fades.add(new KeyAndDelay("title", 0.5f));
+		// fades.add(new KeyAndDelay(null, 3f));
+		// fades.add(new KeyAndDelay("entire_game", 3f));
+		// fades.add(new KeyAndDelay("on_one_screen", 2.5f));
+		// fades.add(new KeyAndDelay(null, 3f));
 		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
 		fades.add(new KeyAndDelay(null, FIELD_DELAY));
+
+		// fades.add(new KeyAndDelay("game", 2.5f));
+		// fades.add(new KeyAndDelay("one", 2.5f));
+		// fades.add(new KeyAndDelay("screen", 2.5f));
 		// fades.add(new KeyAndDelay("level-01", 3f));
 		// fades.add(new KeyAndDelay("level-02", 4f));
 		// fades.add(new KeyAndDelay("level-03", 4f));
@@ -203,11 +204,36 @@ public class Game extends ApplicationAdapter {
 				}
 			}
 			move.set(0, 0);
-			if (started && !startTimerOn) {
+			if (started && !startTimerOn && !playerActor.transporting) {
 				if (playerActor.alive) {
 					updateInput();
-					move.nor().scl(deltaTime * PLAYER_MOVE_SPEED);
-					playerActor.moveBy(move.x, move.y);
+					if (move.x != 0) {
+						tempPoint.set(playerActor.fieldPosition);
+						if (move.x > 0) {
+							tempPoint.x++;
+						} else {
+							tempPoint.x--;
+						}
+						Tile tile = field.table.get(tempPoint.x, tempPoint.y);
+						if (tile != null && tile.type.walkable && !tile.dropped) {
+							playerActor.targetPoint.set(tempPoint);
+							playerActor.transporting = true;
+						}
+					} else if (move.y != 0) {
+						tempPoint.set(playerActor.fieldPosition);
+						if (move.y > 0) {
+							tempPoint.y++;
+						} else {
+							tempPoint.y--;
+						}
+						Tile tile = field.table.get(tempPoint.x, tempPoint.y);
+						if (tile != null && tile.type.walkable && !tile.dropped) {
+							playerActor.targetPoint.set(tempPoint);
+							playerActor.transporting = true;
+						}
+					}
+					// move.nor().scl(deltaTime * PLAYER_MOVE_SPEED);
+					// playerActor.moveBy(move.x, move.y);
 				}
 			}
 		}
@@ -267,6 +293,7 @@ public class Game extends ApplicationAdapter {
 		playerActor.setSize(1, 1);
 		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
 		playerActor.fieldPosition.set(currentLevel.start);
+
 		playerActor.addAction(Actions.color(Color.BLUE, FIELD_DELAY));
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;

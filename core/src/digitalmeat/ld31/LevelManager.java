@@ -50,6 +50,10 @@ public class LevelManager {
 				} else if (color.equals(Color.RED)) {
 					type = TileType.Door;
 					level.locked.add(new Point(x, y));
+				} else if (color.a == 0f) {
+					type = TileType.Empty;
+				} else {
+					type = TileType.Walkable;
 				}
 				TileConfig template = new TileConfig(x, y, type, color);
 				level.table.set(x, y, template);
