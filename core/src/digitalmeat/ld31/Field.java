@@ -66,7 +66,7 @@ public class Field {
 				tile.addAction(
 					Actions.sequence(
 							Actions.delay(delay)
-							, Actions.color(Color.WHITE, 1f)
+							, Actions.color(Color.WHITE, Game.TILE_FADE_DURATION)
 					)
 				);
 				//@formatter:on
@@ -117,7 +117,7 @@ public class Field {
 
 	public float calculateDelay(int x, int y) {
 
-		return x * 0.03f + (table.height - y) * 0.05f;
+		return x * Game.X_DELAY + (table.height - y - 1) * Game.Y_DELAY;
 	}
 
 }

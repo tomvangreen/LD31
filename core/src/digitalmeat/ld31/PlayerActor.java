@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class PlayerActor extends Actor {
 	public final Sprite sprite;
+	public boolean alive;
 
 	public PlayerActor(Texture texture) {
 		this.sprite = new Sprite(texture);

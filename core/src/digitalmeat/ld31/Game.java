@@ -2,6 +2,8 @@ package digitalmeat.ld31;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -26,6 +28,7 @@ public class Game extends ApplicationAdapter {
 	Array<String> levelKeys = new Array<String>(true, 10);
 	LevelManager levels;
 	Vector2 playerPosition = new Vector2();
+	InputMultiplexer plexer = new InputMultiplexer();
 	private PlayerActor playerActor;
 
 	@Override
@@ -50,7 +53,8 @@ public class Game extends ApplicationAdapter {
 		stage.addActor(field.createGroup());
 		playerActor = new PlayerActor(player);
 		stage.addActor(playerActor);
-
+		plexer.addProcessor(stage);
+		plexer.addProcessor(new GameInputProcessor(this));
 		createIntroSequence();
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		levels.load("level-01", "level-01.png");
@@ -70,7 +74,8 @@ public class Game extends ApplicationAdapter {
 		// fades.add(new KeyAndDelay("one", 2.5f));
 		// fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay(null, 3.5f));
+		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
+		fades.add(new KeyAndDelay(null, FIELD_DELAY));
 		// fades.add(new KeyAndDelay("level-01", 3f));
 		// fades.add(new KeyAndDelay("level-02", 4f));
 		// fades.add(new KeyAndDelay("level-03", 4f));
@@ -86,38 +91,11 @@ public class Game extends ApplicationAdapter {
 	int currentLevelIndex = 0;
 	Level currentLevel;
 	boolean started = false;
+	boolean startTimerOn = false;
 
 	@Override
 	public void render() {
-		timer += Gdx.graphics.getDeltaTime();
-		if (fades.size > 0) {
-			KeyAndDelay template = fades.get(0);
-			if (timer > template.delay) {
-				if (template.key != null) {
-					Gdx.app.log("Game", "LoadTemplate");
-					field.loadTemplate(template.key);
-				} else {
-					Gdx.app.log("Game", "FadeOut");
-					field.fadeOut();
-				}
-				timer = 0;
-				fades.removeIndex(0);
-			}
-
-		} else {
-			if (currentLevelIndex < levelKeys.size) {
-				if (!started) {
-					Gdx.app.log("Game", "StartLevel(" + currentLevelIndex + ")");
-					currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
-					field.loadLevel(currentLevel);
-					playerActor.setSize(1, 1);
-					playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
-					playerActor.addAction(Actions.color(Color.BLUE, 3f));
-					started = true;
-				}
-			}
-		}
-		stage.act();
+		act();
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		cam.update();
@@ -129,10 +107,96 @@ public class Game extends ApplicationAdapter {
 
 	}
 
+	private final Vector2 move = new Vector2();
+
+	public void act() {
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		if (deltaTime > 0.5f) {
+			deltaTime = 0.5f;
+		}
+		timer += deltaTime;
+		if (fades.size > 0) {
+			updateFades();
+
+		} else {
+			if (currentLevel == null || !started) {
+				startLevel();
+			} else if (startTimerOn) {
+				startTimer -= deltaTime;
+				if (startTimer < 0) {
+					playerActor.alive = true;
+					startTimerOn = false;
+				}
+			}
+			move.set(0, 0);
+			if (started && !startTimerOn) {
+				if (playerActor.alive) {
+					updateInput();
+					move.nor().scl(deltaTime * PLAYER_MOVE_SPEED);
+					playerActor.moveBy(move.x, move.y);
+				}
+			}
+		}
+		stage.act();
+	}
+
+	public void updateInput() {
+		if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
+			move.x -= 1;
+		}
+		if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
+			move.x += 1;
+		}
+		if (Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.D)) {
+			move.y -= 1;
+		}
+		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W)) {
+			move.y += 1;
+		}
+	}
+
+	public void updateFades() {
+		KeyAndDelay template = fades.get(0);
+		if (timer > template.delay) {
+			if (template.key != null) {
+				Gdx.app.log("Game", "LoadTemplate");
+				field.loadTemplate(template.key);
+			} else {
+				Gdx.app.log("Game", "FadeOut");
+				field.fadeOut();
+			}
+			timer = 0;
+			fades.removeIndex(0);
+		}
+	}
+
+	float startTimer = 0;
+
+	public void startLevel() {
+		Gdx.app.log("Game", "StartLevel(" + currentLevelIndex + ")");
+		currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
+		field.loadLevel(currentLevel);
+		playerActor.setSize(1, 1);
+		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
+		playerActor.addAction(Actions.color(Color.BLUE, 3f));
+		startTimer = FIELD_DELAY;
+		startTimerOn = true;
+		started = true;
+	}
+
 	public final static int VIEWPORT_WIDTH = 1280;
 	public final static int VIEWPORT_HEIGHT = 700;
 	public final static int TILESCREEN_WIDTH = 32;
 	public final static int TILESCREEN_HEIGHT = 20;
+	public static final float X_DELAY = 0.03f;
+	public static final float Y_DELAY = 0.05f;
+	public static final float X_DELAY_TOTAL = TILESCREEN_WIDTH * X_DELAY;
+	public static final float Y_DELAY_TOTAL = TILESCREEN_WIDTH * X_DELAY;
+	public static final float TILE_FADE_DURATION = 1f;
+	public static final float TILE_PULSE_DURATION = 0.5f;
+	public static final float TILE_PULSE_OFFSET = 0.13f;
+	public static final float FIELD_DELAY = Math.max(X_DELAY_TOTAL + TILE_FADE_DURATION, Y_DELAY_TOTAL + TILE_FADE_DURATION);
+	private static final float PLAYER_MOVE_SPEED = 10;
 
 	public static class KeyAndDelay {
 		String key;
