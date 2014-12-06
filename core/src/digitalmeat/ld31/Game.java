@@ -2,11 +2,14 @@ package digitalmeat.ld31;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -22,6 +25,8 @@ public class Game extends ApplicationAdapter {
 	Array<KeyAndDelay> fades = new Array<KeyAndDelay>(true, 10);
 	Array<String> levelKeys = new Array<String>(true, 10);
 	LevelManager levels;
+	Vector2 playerPosition = new Vector2();
+	private PlayerActor playerActor;
 
 	@Override
 	public void create() {
@@ -43,19 +48,10 @@ public class Game extends ApplicationAdapter {
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		stage = new Stage(viewport);
 		stage.addActor(field.createGroup());
+		playerActor = new PlayerActor(player);
+		stage.addActor(playerActor);
 
-		fades.add(new KeyAndDelay("title", 0.5f));
-		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay("entire", 3f));
-		fades.add(new KeyAndDelay("game", 2.5f));
-		fades.add(new KeyAndDelay("on", 2.5f));
-		fades.add(new KeyAndDelay("one", 2.5f));
-		fades.add(new KeyAndDelay("screen", 2.5f));
-		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay(null, 2f));
-		// fades.add(new KeyAndDelay("level-01", 3f));
-		// fades.add(new KeyAndDelay("level-02", 4f));
-		// fades.add(new KeyAndDelay("level-03", 4f));
+		createIntroSequence();
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		levels.load("level-01", "level-01.png");
 		levels.load("level-02", "level-02.png");
@@ -65,6 +61,21 @@ public class Game extends ApplicationAdapter {
 		levelKeys.add("level-03");
 	}
 
+	public void createIntroSequence() {
+		fades.add(new KeyAndDelay("title", 0.5f));
+		// fades.add(new KeyAndDelay(null, 3f));
+		// fades.add(new KeyAndDelay("entire", 3f));
+		// fades.add(new KeyAndDelay("game", 2.5f));
+		// fades.add(new KeyAndDelay("on", 2.5f));
+		// fades.add(new KeyAndDelay("one", 2.5f));
+		// fades.add(new KeyAndDelay("screen", 2.5f));
+		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay(null, 3.5f));
+		// fades.add(new KeyAndDelay("level-01", 3f));
+		// fades.add(new KeyAndDelay("level-02", 4f));
+		// fades.add(new KeyAndDelay("level-03", 4f));
+	}
+
 	@Override
 	public void resize(int width, int height) {
 		viewport.update(width, height);
@@ -72,7 +83,8 @@ public class Game extends ApplicationAdapter {
 
 	private float timer;
 
-	int currentLevel = 0;
+	int currentLevelIndex = 0;
+	Level currentLevel;
 	boolean started = false;
 
 	@Override
@@ -93,10 +105,14 @@ public class Game extends ApplicationAdapter {
 			}
 
 		} else {
-			if (currentLevel < levelKeys.size) {
+			if (currentLevelIndex < levelKeys.size) {
 				if (!started) {
-					Gdx.app.log("Game", "StartLevel(" + currentLevel + ")");
-					field.loadLevel(levels.levels.get(levelKeys.get(currentLevel)));
+					Gdx.app.log("Game", "StartLevel(" + currentLevelIndex + ")");
+					currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
+					field.loadLevel(currentLevel);
+					playerActor.setSize(1, 1);
+					playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
+					playerActor.addAction(Actions.color(Color.BLUE, 3f));
 					started = true;
 				}
 			}
