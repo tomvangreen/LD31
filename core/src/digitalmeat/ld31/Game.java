@@ -36,6 +36,8 @@ public class Game extends ApplicationAdapter {
 		templates.loadTemplate("one", "title_one.png");
 		templates.loadTemplate("screen", "title_screen.png");
 		templates.loadTemplate("level-01", "level-01.png");
+		templates.loadTemplate("level-02", "level-02.png");
+		templates.loadTemplate("level-03", "level-03.png");
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		stage = new Stage(viewport);
 		stage.addActor(field.createGroup());
@@ -49,6 +51,8 @@ public class Game extends ApplicationAdapter {
 		fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("level-01", 3f));
+		fades.add(new KeyAndDelay("level-02", 4f));
+		fades.add(new KeyAndDelay("level-03", 4f));
 	}
 
 	@Override
