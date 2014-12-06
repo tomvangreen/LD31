@@ -60,7 +60,7 @@ public class Game extends ApplicationAdapter {
 		templates.load("on", "title_on.png");
 		templates.load("one", "title_one.png");
 		templates.load("screen", "title_screen.png");
-		templates.load("level-01", "level-01.png");
+		templates.load("level-01", "level-intro.png");
 		templates.load("level-02", "level-02.png");
 		templates.load("level-03", "level-03.png");
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
@@ -70,9 +70,11 @@ public class Game extends ApplicationAdapter {
 		stage.addActor(playerActor);
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
-		createIntroSequence();
+
+		// createIntroSequence();
+
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
-		levels.load("level-01", "level-01.png");
+		levels.load("level-01", "level-intro.png");
 		levels.load("level-02", "level-02.png");
 		levels.load("level-03", "level-03.png");
 		levelKeys.add("level-01");
@@ -303,10 +305,15 @@ public class Game extends ApplicationAdapter {
 		currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
 		field.loadLevel(currentLevel);
 		playerActor.setSize(1, 1);
-		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
-		playerActor.fieldPosition.set(currentLevel.start);
-
-		playerActor.addAction(Actions.sequence(Actions.alpha(0f, FIELD_DELAY / 2), Actions.color(Color.BLUE, FIELD_DELAY / 2)));
+		//@formatter:off
+		playerActor.addAction(
+			Actions.sequence(
+				Actions.alpha(0f, FIELD_DELAY / 2)
+				, Actions.moveTo(currentLevel.start.x, currentLevel.start.y)
+				, Actions.color(Color.BLUE, FIELD_DELAY / 2)
+			)
+		);
+		//@formatter:on
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;
 		started = true;
