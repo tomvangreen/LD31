@@ -51,9 +51,9 @@ public class Game extends ApplicationAdapter {
 		fades.add(new KeyAndDelay("one", 2.5f));
 		fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay("level-01", 3f));
-		fades.add(new KeyAndDelay("level-02", 4f));
-		fades.add(new KeyAndDelay("level-03", 4f));
+		// fades.add(new KeyAndDelay("level-01", 3f));
+		// fades.add(new KeyAndDelay("level-02", 4f));
+		// fades.add(new KeyAndDelay("level-03", 4f));
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		levels.load("level-01", "level-01.png");
 		levels.load("level-02", "level-02.png");
