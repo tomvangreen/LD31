@@ -92,6 +92,10 @@ public class Field {
 				tile.targetColor.set(getTargetColor(level, x, y));
 				TileConfig config = level.table.get(x, y);
 				tile.type = config.type;
+				tile.drawing = true;
+				tile.dropped = false;
+				tile.spriteRotation = 0f;
+				tile.setSize(1, 1);
 			}
 		}
 		fadeIn();

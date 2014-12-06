@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import digitalmeat.ld31.Tile.TileType;
 import eu32k.libgdx.rendering.AdvancedShader;
 import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
@@ -92,11 +93,11 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void createIntroSequence() {
-		// fades.add(new KeyAndDelay("title", 0.5f));
-		// fades.add(new KeyAndDelay(null, 3f));
-		// fades.add(new KeyAndDelay("entire_game", 3f));
-		// fades.add(new KeyAndDelay("on_one_screen", 2.5f));
-		// fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay("title", 0.5f));
+		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay("entire_game", 3f));
+		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
+		fades.add(new KeyAndDelay(null, 3f));
 		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
 		fades.add(new KeyAndDelay(null, FIELD_DELAY));
 
@@ -247,7 +248,13 @@ public class Game extends ApplicationAdapter {
 						leaving.drop();
 					}
 				}
-				playerActor.fieldPosition.set(tempPoint);
+
+			}
+			Tile tile = field.table.get(tempPoint.x, tempPoint.y);
+			if (tile != null && tile.type == TileType.Food) {
+				currentLevel = null;
+				currentLevelIndex++;
+				started = false;
 			}
 		}
 	}
@@ -266,6 +273,11 @@ public class Game extends ApplicationAdapter {
 		}
 		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W)) {
 			move.y += 1;
+		}
+		if (Gdx.input.isKeyPressed(Keys.R)) {
+			move.set(0, 0);
+			currentLevel = null;
+			started = false;
 		}
 	}
 
@@ -294,7 +306,7 @@ public class Game extends ApplicationAdapter {
 		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
 		playerActor.fieldPosition.set(currentLevel.start);
 
-		playerActor.addAction(Actions.color(Color.BLUE, FIELD_DELAY));
+		playerActor.addAction(Actions.sequence(Actions.alpha(0f, FIELD_DELAY / 2), Actions.color(Color.BLUE, FIELD_DELAY / 2)));
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;
 		started = true;
