@@ -21,7 +21,7 @@ public class TemplateManager {
 		this.height = height;
 	}
 
-	public void loadTemplate(String key, String file) {
+	public void load(String key, String file) {
 		Pixmap pixmap = new Pixmap(Gdx.files.internal(file));
 		int endX = Math.min(width, pixmap.getWidth());
 		int endY = Math.min(height, pixmap.getHeight());

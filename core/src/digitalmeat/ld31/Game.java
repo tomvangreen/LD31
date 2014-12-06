@@ -20,6 +20,7 @@ public class Game extends ApplicationAdapter {
 	Field field;
 	Stage stage;
 	Array<KeyAndDelay> fades = new Array<KeyAndDelay>(true, 10);
+	LevelManager levels;
 
 	@Override
 	public void create() {
@@ -29,15 +30,15 @@ public class Game extends ApplicationAdapter {
 		tile = new Texture("tile.png");
 		player = new Texture("player.png");
 		TemplateManager templates = new TemplateManager(TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
-		templates.loadTemplate("title", "title.png");
-		templates.loadTemplate("entire", "title_entire.png");
-		templates.loadTemplate("game", "title_game.png");
-		templates.loadTemplate("on", "title_on.png");
-		templates.loadTemplate("one", "title_one.png");
-		templates.loadTemplate("screen", "title_screen.png");
-		templates.loadTemplate("level-01", "level-01.png");
-		templates.loadTemplate("level-02", "level-02.png");
-		templates.loadTemplate("level-03", "level-03.png");
+		templates.load("title", "title.png");
+		templates.load("entire", "title_entire.png");
+		templates.load("game", "title_game.png");
+		templates.load("on", "title_on.png");
+		templates.load("one", "title_one.png");
+		templates.load("screen", "title_screen.png");
+		templates.load("level-01", "level-01.png");
+		templates.load("level-02", "level-02.png");
+		templates.load("level-03", "level-03.png");
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		stage = new Stage(viewport);
 		stage.addActor(field.createGroup());
@@ -53,6 +54,10 @@ public class Game extends ApplicationAdapter {
 		fades.add(new KeyAndDelay("level-01", 3f));
 		fades.add(new KeyAndDelay("level-02", 4f));
 		fades.add(new KeyAndDelay("level-03", 4f));
+		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
+		levels.load("level-01", "level-01.png");
+		levels.load("level-02", "level-02.png");
+		levels.load("level-03", "level-03.png");
 	}
 
 	@Override
