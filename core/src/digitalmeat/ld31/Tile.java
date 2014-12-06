@@ -22,14 +22,19 @@ public class Tile extends Actor {
 
 	public Tile(Texture texture) {
 		this.sprite = new Sprite(texture);
+		setColor(Game.OFF_COLOR);
 	}
 
 	public Action createPulse() {
 		tempColor.set(targetColor);
-		tempColor.r = Math.min(1f, tempColor.r + Game.TILE_PULSE_OFFSET);
-		tempColor.g = Math.min(1f, tempColor.g + 0.13f);
-		tempColor.b = Math.min(1f, tempColor.b + 0.13f);
-		tempColor.a = Math.min(1f, tempColor.a + 0.13f);
+		float offset = Game.TILE_PULSE_OFFSET;
+		if (Game.ON_COLOR.r > Game.OFF_COLOR.r) {
+			offset *= -1;
+		}
+		tempColor.r = Math.min(1f, tempColor.r + offset);
+		tempColor.g = Math.min(1f, tempColor.g + offset);
+		tempColor.b = Math.min(1f, tempColor.b + offset);
+		tempColor.a = Math.min(1f, tempColor.a + offset);
 		//@formatter:off
 		return Actions.forever(
 			Actions.sequence(
@@ -69,7 +74,7 @@ public class Tile extends Actor {
 		//@formatter:off
 		return Actions.sequence(
 			Actions.parallel(
-				Actions.color(Color.WHITE, Game.TILE_DROP_DURATION)
+				Actions.color(Game.OFF_COLOR, Game.TILE_DROP_DURATION)
 				, Actions.sizeTo(0f, 0f, Game.TILE_DROP_DURATION)
 //				, Actions.scaleTo(0, 0, Game.TILE_PULSE_DURATION * 4)
 			)
@@ -80,7 +85,7 @@ public class Tile extends Actor {
 					drawing = false;
 				}
 			})
-			, Actions.color(Color.WHITE)
+			, Actions.color(Game.OFF_COLOR)
 			, Actions.sizeTo(1, 1)
 		);
 		//@formatter:on

@@ -18,6 +18,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import eu32k.libgdx.rendering.AdvancedShader;
+import eu32k.libgdx.rendering.DynamicFrameBuffer;
+
 public class Game extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture tile;
@@ -32,6 +35,13 @@ public class Game extends ApplicationAdapter {
 	Vector2 playerPosition = new Vector2();
 	InputMultiplexer plexer = new InputMultiplexer();
 	private PlayerActor playerActor;
+	private DynamicFrameBuffer mainBuffer;
+	private DynamicFrameBuffer secondaryBuffer;
+	private AdvancedShader mixerShader;
+	private DynamicFrameBuffer blurBuffer1;
+	private AdvancedShader verticalBlur;
+	private DynamicFrameBuffer blurBuffer2;
+	private AdvancedShader horizontalBlur;
 
 	@Override
 	public void create() {
@@ -44,6 +54,8 @@ public class Game extends ApplicationAdapter {
 		templates.load("title", "title.png");
 		templates.load("entire", "title_entire.png");
 		templates.load("game", "title_game.png");
+		templates.load("entire_game", "title_entire_game.png");
+		templates.load("on_one_screen", "title_on_one_screen.png");
 		templates.load("on", "title_on.png");
 		templates.load("one", "title_one.png");
 		templates.load("screen", "title_screen.png");
@@ -65,16 +77,28 @@ public class Game extends ApplicationAdapter {
 		levelKeys.add("level-01");
 		levelKeys.add("level-02");
 		levelKeys.add("level-03");
+
+		float scaleDown = 1f;
+		mainBuffer = new DynamicFrameBuffer();
+		secondaryBuffer = new DynamicFrameBuffer(scaleDown);
+		mixerShader = new AdvancedShader(Gdx.files.internal("shaders/simple.vsh").readString(), Gdx.files.internal("shaders/mixer.fsh").readString());
+
+		blurBuffer1 = new DynamicFrameBuffer(scaleDown);
+		verticalBlur = new AdvancedShader(Gdx.files.internal("shaders/simple.vsh").readString(), Gdx.files.internal("shaders/blur_v.fsh").readString());
+
+		blurBuffer2 = new DynamicFrameBuffer(scaleDown);
+		horizontalBlur = new AdvancedShader(Gdx.files.internal("shaders/simple.vsh").readString(), Gdx.files.internal("shaders/blur_h.fsh").readString());
+
 	}
 
 	public void createIntroSequence() {
 		fades.add(new KeyAndDelay("title", 0.5f));
 		fades.add(new KeyAndDelay(null, 3f));
-		fades.add(new KeyAndDelay("entire", 3f));
-		fades.add(new KeyAndDelay("game", 2.5f));
-		fades.add(new KeyAndDelay("on", 2.5f));
-		fades.add(new KeyAndDelay("one", 2.5f));
-		fades.add(new KeyAndDelay("screen", 2.5f));
+		fades.add(new KeyAndDelay("entire_game", 3f));
+		// fades.add(new KeyAndDelay("game", 2.5f));
+		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
+		// fades.add(new KeyAndDelay("one", 2.5f));
+		// fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
 		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
 		fades.add(new KeyAndDelay(null, FIELD_DELAY));
@@ -94,19 +118,67 @@ public class Game extends ApplicationAdapter {
 	Level currentLevel;
 	boolean started = false;
 	boolean startTimerOn = false;
+	private boolean useShader = false;
 
 	@Override
 	public void render() {
 		act();
-		Gdx.gl.glClearColor(1, 1, 1, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		cam.update();
+		if (useShader) {
+			renderToScreen();
+		} else {
+			renderStage();
+		}
+	}
 
-		stage.draw();
+	public void renderToScreen() {
+		mainBuffer.begin();
+		renderStage();
+		mainBuffer.end();
+
+		secondaryBuffer.begin();
+		renderStage();
+		secondaryBuffer.end();
+
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		secondaryBuffer.bindTexture();
+		verticalBlur.begin();
+		verticalBlur.setUniformi("uTexture", 0);
+		verticalBlur.renderToQuad(blurBuffer1, TILESCREEN_WIDTH, TILESCREEN_HEIGHT, true);
+
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		blurBuffer1.bindTexture();
+		horizontalBlur.begin();
+		horizontalBlur.setUniformi("uTexture", 0);
+		horizontalBlur.renderToQuad(blurBuffer2, TILESCREEN_WIDTH, TILESCREEN_HEIGHT, true);
+
+		// --
+
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE1);
+		mainBuffer.bindTexture();
+
+		Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
+		blurBuffer2.bindTexture();
+
+		mixerShader.begin();
+		mixerShader.setUniformi("uTexture1", 1);
+		mixerShader.setUniformi("uTexture2", 0);
+
+		mixerShader.setUniformf("uFactor1", 1.0f);
+		mixerShader.setUniformf("uFactor2", 1.6f);
+
+		mixerShader.renderToScreeQuad(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		mixerShader.end();
+
 		// batch.setProjectionMatrix(cam.combined);
 		// batch.begin();
 		// batch.end();
+	}
 
+	public void renderStage() {
+		Gdx.gl.glClearColor(OFF_COLOR.r, OFF_COLOR.g, OFF_COLOR.b, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		cam.update();
+		stage.draw();
 	}
 
 	private final Vector2 move = new Vector2();
@@ -163,7 +235,7 @@ public class Game extends ApplicationAdapter {
 		if (Gdx.input.isKeyPressed(Keys.RIGHT) || Gdx.input.isKeyPressed(Keys.D)) {
 			move.x += 1;
 		}
-		if (Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.D)) {
+		if (Gdx.input.isKeyPressed(Keys.DOWN) || Gdx.input.isKeyPressed(Keys.S)) {
 			move.y -= 1;
 		}
 		if (Gdx.input.isKeyPressed(Keys.UP) || Gdx.input.isKeyPressed(Keys.W)) {
@@ -195,7 +267,7 @@ public class Game extends ApplicationAdapter {
 		playerActor.setSize(1, 1);
 		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
 		playerActor.fieldPosition.set(currentLevel.start);
-		playerActor.addAction(Actions.color(Color.BLUE, 3f));
+		playerActor.addAction(Actions.color(Color.BLUE, FIELD_DELAY));
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;
 		started = true;
@@ -212,10 +284,16 @@ public class Game extends ApplicationAdapter {
 	public static final float TILE_FADE_DURATION = 1f;
 	public static final float TILE_PULSE_DURATION = 0.5f;
 	public static final float TILE_DROP_DURATION = 0.5f;
-	public static final float TILE_PULSE_OFFSET = 0.13f;
+	public static final float TILE_PULSE_OFFSET = 0.05f;
 	public static final float FIELD_DELAY = Math.max(X_DELAY_TOTAL, Y_DELAY_TOTAL) + TILE_FADE_DURATION + TILE_PULSE_DURATION;
-	private static final float PLAYER_MOVE_SPEED = 5;
+	public static final float PLAYER_MOVE_SPEED = 5;
 	public static final float TILE_DROP_ROTATION_SPEED = 180;
+
+	// public final static Color OFF_COLOR = new Color(0, 0, 0, 0);
+	// public final static Color ON_COLOR = new Color(Color.WHITE);
+
+	public final static Color ON_COLOR = new Color(0, 0, 0, 0);
+	public final static Color OFF_COLOR = new Color(Color.WHITE);
 
 	public static class KeyAndDelay {
 		String key;

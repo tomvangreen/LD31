@@ -30,7 +30,7 @@ public class Field {
 				tile.fieldPosition.set(x, y);
 				tile.setSize(1, 1);
 				tile.setPosition(x, y);
-				tile.targetColor.set(Color.WHITE);
+				tile.targetColor.set(Game.OFF_COLOR);
 				table.set(x, y, tile);
 				group.addActor(tile);
 			}
@@ -47,7 +47,7 @@ public class Field {
 				//@formatter:off
 				tile.addAction(
 					Actions.sequence(
-							Actions.color(Color.WHITE, delay)
+							Actions.color(Game.OFF_COLOR, delay)
 							, tile.createPulse()
 					)
 				);
@@ -66,7 +66,7 @@ public class Field {
 				tile.addAction(
 					Actions.sequence(
 							Actions.delay(delay)
-							, Actions.color(Color.WHITE, Game.TILE_FADE_DURATION)
+							, Actions.color(Game.OFF_COLOR, Game.TILE_FADE_DURATION)
 					)
 				);
 				//@formatter:on
@@ -102,7 +102,7 @@ public class Field {
 				return color;
 			}
 		}
-		return Color.WHITE;
+		return Game.ON_COLOR;
 	}
 
 	private Color getTargetColor(Level template, int x, int y) {
@@ -112,7 +112,7 @@ public class Field {
 				return config.color;
 			}
 		}
-		return Color.WHITE;
+		return Game.ON_COLOR;
 	}
 
 	public float calculateDelay(int x, int y) {
