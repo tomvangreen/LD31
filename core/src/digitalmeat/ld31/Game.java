@@ -1,5 +1,7 @@
 package digitalmeat.ld31;
 
+import ch.digitalmeat.util.Point;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -67,12 +69,12 @@ public class Game extends ApplicationAdapter {
 
 	public void createIntroSequence() {
 		fades.add(new KeyAndDelay("title", 0.5f));
-		// fades.add(new KeyAndDelay(null, 3f));
-		// fades.add(new KeyAndDelay("entire", 3f));
-		// fades.add(new KeyAndDelay("game", 2.5f));
-		// fades.add(new KeyAndDelay("on", 2.5f));
-		// fades.add(new KeyAndDelay("one", 2.5f));
-		// fades.add(new KeyAndDelay("screen", 2.5f));
+		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay("entire", 3f));
+		fades.add(new KeyAndDelay("game", 2.5f));
+		fades.add(new KeyAndDelay("on", 2.5f));
+		fades.add(new KeyAndDelay("one", 2.5f));
+		fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
 		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
 		fades.add(new KeyAndDelay(null, FIELD_DELAY));
@@ -138,7 +140,21 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 		stage.act();
+		if (started && !startTimerOn) {
+			tempPoint.set((int) (playerActor.getX() + 0.5f), (int) (playerActor.getY() + 0.5f));
+			if (!tempPoint.equals(playerActor.fieldPosition)) {
+				Tile leaving = field.table.get(playerActor.fieldPosition.x, playerActor.fieldPosition.y);
+				if (leaving != null) {
+					if (!leaving.dropped) {
+						leaving.drop();
+					}
+				}
+				playerActor.fieldPosition.set(tempPoint);
+			}
+		}
 	}
+
+	final Point tempPoint = new Point();
 
 	public void updateInput() {
 		if (Gdx.input.isKeyPressed(Keys.LEFT) || Gdx.input.isKeyPressed(Keys.A)) {
@@ -178,6 +194,7 @@ public class Game extends ApplicationAdapter {
 		field.loadLevel(currentLevel);
 		playerActor.setSize(1, 1);
 		playerActor.setPosition(currentLevel.start.x, currentLevel.start.y);
+		playerActor.fieldPosition.set(currentLevel.start);
 		playerActor.addAction(Actions.color(Color.BLUE, 3f));
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;
@@ -191,12 +208,14 @@ public class Game extends ApplicationAdapter {
 	public static final float X_DELAY = 0.03f;
 	public static final float Y_DELAY = 0.05f;
 	public static final float X_DELAY_TOTAL = TILESCREEN_WIDTH * X_DELAY;
-	public static final float Y_DELAY_TOTAL = TILESCREEN_WIDTH * X_DELAY;
+	public static final float Y_DELAY_TOTAL = TILESCREEN_HEIGHT * Y_DELAY;
 	public static final float TILE_FADE_DURATION = 1f;
 	public static final float TILE_PULSE_DURATION = 0.5f;
+	public static final float TILE_DROP_DURATION = 0.5f;
 	public static final float TILE_PULSE_OFFSET = 0.13f;
-	public static final float FIELD_DELAY = Math.max(X_DELAY_TOTAL + TILE_FADE_DURATION, Y_DELAY_TOTAL + TILE_FADE_DURATION);
-	private static final float PLAYER_MOVE_SPEED = 10;
+	public static final float FIELD_DELAY = Math.max(X_DELAY_TOTAL, Y_DELAY_TOTAL) + TILE_FADE_DURATION + TILE_PULSE_DURATION;
+	private static final float PLAYER_MOVE_SPEED = 5;
+	public static final float TILE_DROP_ROTATION_SPEED = 180;
 
 	public static class KeyAndDelay {
 		String key;

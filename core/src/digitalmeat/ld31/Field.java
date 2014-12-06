@@ -116,7 +116,6 @@ public class Field {
 	}
 
 	public float calculateDelay(int x, int y) {
-
 		return x * Game.X_DELAY + (table.height - y - 1) * Game.Y_DELAY;
 	}
 
