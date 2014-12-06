@@ -3,6 +3,7 @@ package digitalmeat.ld31;
 import ch.digitalmeat.grid.util.Table;
 import ch.digitalmeat.util.Point;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 
 import digitalmeat.ld31.Tile.TileType;
@@ -23,8 +24,9 @@ public class Level {
 		public TileType type;
 		public final int x;
 		public final int y;
+		public Color color;
 
-		public TileConfig(int x, int y, TileType type) {
+		public TileConfig(int x, int y, TileType type, Color color) {
 			this.x = x;
 			this.y = y;
 			this.type = type;

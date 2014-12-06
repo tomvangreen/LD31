@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import digitalmeat.ld31.Level.TileConfig;
 import digitalmeat.ld31.TemplateManager.Template;
 
 public class Field {
@@ -84,6 +85,16 @@ public class Field {
 		fadeIn();
 	}
 
+	public void loadLevel(Level level) {
+		for (int y = 0; y < table.height; y++) {
+			for (int x = 0; x < table.width; x++) {
+				Tile tile = table.get(x, y);
+				tile.targetColor.set(getTargetColor(level, x, y));
+			}
+		}
+		fadeIn();
+	}
+
 	private Color getTargetColor(Template template, int x, int y) {
 		if (template != null) {
 			Color color = template.table.get(x, y);
@@ -94,8 +105,19 @@ public class Field {
 		return Color.WHITE;
 	}
 
+	private Color getTargetColor(Level template, int x, int y) {
+		if (template != null) {
+			TileConfig config = template.table.get(x, y);
+			if (config != null && config.color != null) {
+				return config.color;
+			}
+		}
+		return Color.WHITE;
+	}
+
 	public float calculateDelay(int x, int y) {
 
 		return x * 0.03f + (table.height - y) * 0.05f;
 	}
+
 }

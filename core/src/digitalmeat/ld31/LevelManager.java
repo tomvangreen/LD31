@@ -51,11 +51,16 @@ public class LevelManager {
 					type = TileType.Door;
 					level.locked.add(new Point(x, y));
 				}
-				TileConfig template = new TileConfig(x, y, type);
+				TileConfig template = new TileConfig(x, y, type, color);
 				level.table.set(x, y, template);
 
 			}
 		}
 		levels.put(key, level);
+	}
+
+	public void loadLevel(String key) {
+		Level level = levels.get(key);
+		field.loadLevel(level);
 	}
 }
