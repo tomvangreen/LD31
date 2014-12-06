@@ -24,12 +24,13 @@ public class Level {
 		public TileType type;
 		public final int x;
 		public final int y;
-		public Color color;
+		public final Color color;
 
 		public TileConfig(int x, int y, TileType type, Color color) {
 			this.x = x;
 			this.y = y;
 			this.type = type;
+			this.color = color;
 		}
 	}
 }

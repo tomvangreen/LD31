@@ -20,6 +20,7 @@ public class Game extends ApplicationAdapter {
 	Field field;
 	Stage stage;
 	Array<KeyAndDelay> fades = new Array<KeyAndDelay>(true, 10);
+	Array<String> levelKeys = new Array<String>(true, 10);
 	LevelManager levels;
 
 	@Override
@@ -51,6 +52,7 @@ public class Game extends ApplicationAdapter {
 		fades.add(new KeyAndDelay("one", 2.5f));
 		fades.add(new KeyAndDelay("screen", 2.5f));
 		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay(null, 2f));
 		// fades.add(new KeyAndDelay("level-01", 3f));
 		// fades.add(new KeyAndDelay("level-02", 4f));
 		// fades.add(new KeyAndDelay("level-03", 4f));
@@ -58,6 +60,9 @@ public class Game extends ApplicationAdapter {
 		levels.load("level-01", "level-01.png");
 		levels.load("level-02", "level-02.png");
 		levels.load("level-03", "level-03.png");
+		levelKeys.add("level-01");
+		levelKeys.add("level-02");
+		levelKeys.add("level-03");
 	}
 
 	@Override
@@ -67,6 +72,9 @@ public class Game extends ApplicationAdapter {
 
 	private float timer;
 
+	int currentLevel = 0;
+	boolean started = false;
+
 	@Override
 	public void render() {
 		timer += Gdx.graphics.getDeltaTime();
@@ -74,14 +82,24 @@ public class Game extends ApplicationAdapter {
 			KeyAndDelay template = fades.get(0);
 			if (timer > template.delay) {
 				if (template.key != null) {
+					Gdx.app.log("Game", "LoadTemplate");
 					field.loadTemplate(template.key);
 				} else {
+					Gdx.app.log("Game", "FadeOut");
 					field.fadeOut();
 				}
 				timer = 0;
 				fades.removeIndex(0);
 			}
 
+		} else {
+			if (currentLevel < levelKeys.size) {
+				if (!started) {
+					Gdx.app.log("Game", "StartLevel(" + currentLevel + ")");
+					field.loadLevel(levels.levels.get(levelKeys.get(currentLevel)));
+					started = true;
+				}
+			}
 		}
 		stage.act();
 		Gdx.gl.glClearColor(1, 1, 1, 1);
