@@ -36,24 +36,28 @@ public class LevelManager {
 		level.locked.clear();
 		for (int y = 0; y < endY; y++) {
 			for (int x = 0; x < endX; x++) {
-				TileType type = TileType.Empty;
 				Color color = new Color(pixmap.getPixel(x, y));
-				if (color.equals(Color.BLUE)) {
-					type = TileType.Start;
+				TileType type = TileType.getTypeByColor(color);
+				switch (type) {
+				case Start:
 					level.start.set(x, height - y - 1);
-				} else if (color.equals(Color.GREEN)) {
-					type = TileType.Food;
+					break;
+				case Food:
+					level.food.add(new Point(x, height - y - 1));
 					level.foodTiles++;
-				} else if (color.equals(Color.YELLOW)) {
-					type = TileType.Key;
+					break;
+				case Key:
+					level.keyLocations.add(new Point(x, height - y - 1));
 					level.keys++;
-				} else if (color.equals(Color.RED)) {
-					type = TileType.Door;
+					break;
+				case Door:
 					level.locked.add(new Point(x, height - y - 1));
-				} else if (color.a == 0f) {
-					type = TileType.Empty;
-				} else {
-					type = TileType.Walkable;
+					break;
+				case Goal:
+					level.goal.set(x, height - y - 1);
+					break;
+				default:
+					break;
 				}
 				TileConfig template = new TileConfig(x, height - y - 1, type, color);
 				level.table.set(x, height - y - 1, template);

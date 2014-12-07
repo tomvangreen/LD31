@@ -12,9 +12,12 @@ public class Level {
 
 	public final Table<TileConfig> table;
 	public final Point start = new Point();
+	public final Point goal = new Point();
 	public int foodTiles;
 	public int keys;
 	public final Array<Point> locked = new Array<Point>();
+	public final Array<Point> keyLocations = new Array<Point>();
+	public final Array<Point> food = new Array<Point>();
 
 	public Level(int width, int height) {
 		this.table = new Table<TileConfig>(width, height);

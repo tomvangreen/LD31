@@ -1,5 +1,8 @@
 package digitalmeat.ld31;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import ch.digitalmeat.util.Point;
 
 import com.badlogic.gdx.graphics.Color;
@@ -108,17 +111,45 @@ public class Tile extends Actor {
 	}
 
 	public static enum TileType {
-		Empty(false), Walkable(true), Start(true), Food(true), Key(true), Door(true, true);
+		Empty(false), Walkable(true), Start(true, Color.BLUE), Food(true, Color.GREEN), Key(true, Color.YELLOW), Door(true, Color.RED, true), Goal(true, Color.CYAN);
 		public final boolean walkable;
 		public final boolean locked;
+		public final Color color;
 
 		TileType(boolean walkable) {
-			this(walkable, false);
+			this(walkable, null, false);
 		}
 
-		TileType(boolean walkable, boolean locked) {
+		TileType(boolean walkable, Color color) {
+			this(walkable, color, false);
+		}
+
+		TileType(boolean walkable, Color color, boolean locked) {
 			this.walkable = walkable;
 			this.locked = locked;
+			this.color = color;
+		}
+
+		private static Map<Color, TileType> typeMap;
+
+		public static TileType getTypeByColor(Color color) {
+			if (typeMap == null) {
+				createTypeMap();
+			}
+			TileType type = typeMap.get(color);
+			if (type == null) {
+				type = color.a == 0 ? TileType.Empty : TileType.Walkable;
+			}
+			return type;
+		}
+
+		public static void createTypeMap() {
+			typeMap = new HashMap<Color, TileType>();
+			for (TileType type : TileType.values()) {
+				if (type.color != null) {
+					typeMap.put(type.color, type);
+				}
+			}
 		}
 	}
 }

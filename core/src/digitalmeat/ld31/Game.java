@@ -71,11 +71,12 @@ public class Game extends ApplicationAdapter {
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
 
-		createIntroSequence();
+		// createIntroSequence();
 
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		levelKeys.add("level-intro.png");
 		levelKeys.add("level-02.png");
+		levelKeys.add("level-food.png");
 		levelKeys.add("level-03.png");
 		for (String key : levelKeys) {
 			levels.load(key, key);
@@ -248,14 +249,14 @@ public class Game extends ApplicationAdapter {
 			if (!tempPoint.equals(playerActor.fieldPosition)) {
 				Tile leaving = field.table.get(playerActor.fieldPosition.x, playerActor.fieldPosition.y);
 				if (leaving != null) {
-					if (!leaving.dropped) {
+					if (!leaving.dropped && leaving.type != TileType.Goal) {
 						leaving.drop();
 					}
 				}
 
 			}
 			Tile tile = field.table.get(tempPoint.x, tempPoint.y);
-			if (tile != null && tile.type == TileType.Food) {
+			if (tile != null && tile.type == TileType.Goal) {
 				currentLevel = null;
 				currentLevelIndex++;
 				started = false;
@@ -279,6 +280,7 @@ public class Game extends ApplicationAdapter {
 			move.y += 1;
 		}
 		if (Gdx.input.isKeyPressed(Keys.R)) {
+
 			move.set(0, 0);
 			currentLevel = null;
 			started = false;
@@ -301,11 +303,13 @@ public class Game extends ApplicationAdapter {
 	}
 
 	float startTimer = 0;
+	int foodFound = 0;
 
 	public void startLevel() {
 		Gdx.app.log("Game", "StartLevel(" + currentLevelIndex + ")");
 		currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
 		field.loadLevel(currentLevel);
+		foodFound = 0;
 		playerActor.setSize(1, 1);
 		//@formatter:off
 		playerActor.addAction(
