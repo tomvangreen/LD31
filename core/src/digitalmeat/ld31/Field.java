@@ -2,6 +2,7 @@ package digitalmeat.ld31;
 
 import ch.digitalmeat.grid.util.Table;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -86,19 +87,23 @@ public class Field {
 	}
 
 	public void loadLevel(Level level) {
-		for (int y = 0; y < table.height; y++) {
-			for (int x = 0; x < table.width; x++) {
-				Tile tile = table.get(x, y);
-				tile.targetColor.set(getTargetColor(level, x, y));
-				TileConfig config = level.table.get(x, y);
-				tile.type = config.type;
-				tile.drawing = true;
-				tile.dropped = false;
-				tile.spriteRotation = 0f;
-				tile.setSize(1, 1);
+		if (level != null) {
+			for (int y = 0; y < table.height; y++) {
+				for (int x = 0; x < table.width; x++) {
+					Tile tile = table.get(x, y);
+					tile.targetColor.set(getTargetColor(level, x, y));
+					TileConfig config = level.table.get(x, y);
+					tile.type = config.type;
+					tile.drawing = true;
+					tile.dropped = false;
+					tile.spriteRotation = 0f;
+					tile.setSize(1, 1);
+				}
 			}
+			fadeIn();
+		} else {
+			Gdx.app.error("Field", "Cannot load level. Level is null.");
 		}
-		fadeIn();
 	}
 
 	private Color getTargetColor(Template template, int x, int y) {

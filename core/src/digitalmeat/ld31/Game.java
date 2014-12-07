@@ -60,9 +60,9 @@ public class Game extends ApplicationAdapter {
 		templates.load("on", "title_on.png");
 		templates.load("one", "title_one.png");
 		templates.load("screen", "title_screen.png");
-		templates.load("level-01", "level-intro.png");
-		templates.load("level-02", "level-02.png");
-		templates.load("level-03", "level-03.png");
+		templates.load("c1", "credits-grats.png");
+		templates.load("c2", "credits-madeby.png");
+
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		stage = new Stage(viewport);
 		stage.addActor(field.createGroup());
@@ -71,15 +71,15 @@ public class Game extends ApplicationAdapter {
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
 
-		// createIntroSequence();
+		createIntroSequence();
 
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
-		levels.load("level-01", "level-intro.png");
-		levels.load("level-02", "level-02.png");
-		levels.load("level-03", "level-03.png");
-		levelKeys.add("level-01");
-		levelKeys.add("level-02");
-		levelKeys.add("level-03");
+		levelKeys.add("level-intro.png");
+		levelKeys.add("level-02.png");
+		levelKeys.add("level-03.png");
+		for (String key : levelKeys) {
+			levels.load(key, key);
+		}
 
 		float scaleDown = 1f;
 		mainBuffer = new DynamicFrameBuffer();
@@ -96,6 +96,8 @@ public class Game extends ApplicationAdapter {
 
 	public void createIntroSequence() {
 		fades.add(new KeyAndDelay("title", 0.5f));
+		fades.add(new KeyAndDelay("c1", 3f));
+		fades.add(new KeyAndDelay("c2", 3f));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("entire_game", 3f));
 		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
