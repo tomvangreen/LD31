@@ -40,7 +40,7 @@ public class LevelManager {
 				Color color = new Color(pixmap.getPixel(x, y));
 				if (color.equals(Color.BLUE)) {
 					type = TileType.Start;
-					level.start.set(x, y);
+					level.start.set(x, height - y - 1);
 				} else if (color.equals(Color.GREEN)) {
 					type = TileType.Food;
 					level.foodTiles++;
@@ -49,14 +49,14 @@ public class LevelManager {
 					level.keys++;
 				} else if (color.equals(Color.RED)) {
 					type = TileType.Door;
-					level.locked.add(new Point(x, y));
+					level.locked.add(new Point(x, height - y - 1));
 				} else if (color.a == 0f) {
 					type = TileType.Empty;
 				} else {
 					type = TileType.Walkable;
 				}
-				TileConfig template = new TileConfig(x, y, type, color);
-				level.table.set(x, y, template);
+				TileConfig template = new TileConfig(x, height - y - 1, type, color);
+				level.table.set(x, height - y - 1, template);
 
 			}
 		}
