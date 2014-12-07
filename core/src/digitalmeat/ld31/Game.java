@@ -97,8 +97,6 @@ public class Game extends ApplicationAdapter {
 
 	public void createIntroSequence() {
 		fades.add(new KeyAndDelay("title", 0.5f));
-		fades.add(new KeyAndDelay("c1", 3f));
-		fades.add(new KeyAndDelay("c2", 3f));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("entire_game", 3f));
 		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
@@ -112,6 +110,13 @@ public class Game extends ApplicationAdapter {
 		// fades.add(new KeyAndDelay("level-01", 3f));
 		// fades.add(new KeyAndDelay("level-02", 4f));
 		// fades.add(new KeyAndDelay("level-03", 4f));
+	}
+
+	public void createOutroSequence() {
+		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay("c1", 3f));
+		fades.add(new KeyAndDelay("c2", 3f));
+		fades.add(new KeyAndDelay(null, 3f));
 	}
 
 	@Override
@@ -201,7 +206,14 @@ public class Game extends ApplicationAdapter {
 
 		} else {
 			if (currentLevel == null || !started) {
-				startLevel();
+				if (currentLevelIndex >= levels.levels.size()) {
+					currentLevelIndex = 0;
+					createOutroSequence();
+					createIntroSequence();
+
+				} else {
+					startLevel();
+				}
 			} else if (startTimerOn) {
 				startTimer -= deltaTime;
 				if (startTimer < 0) {
