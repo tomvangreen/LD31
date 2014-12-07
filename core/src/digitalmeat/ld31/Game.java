@@ -251,12 +251,16 @@ public class Game extends ApplicationAdapter {
 				if (leaving != null) {
 					if (!leaving.dropped && leaving.type != TileType.Goal) {
 						leaving.drop();
+
+					}
+					if (leaving.type == TileType.Food) {
+						foodFound++;
 					}
 				}
 
 			}
 			Tile tile = field.table.get(tempPoint.x, tempPoint.y);
-			if (tile != null && tile.type == TileType.Goal) {
+			if (tile != null && tile.type == TileType.Goal && foodFound == currentLevel.foodTiles) {
 				currentLevel = null;
 				currentLevelIndex++;
 				started = false;
