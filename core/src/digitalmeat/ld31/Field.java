@@ -81,6 +81,10 @@ public class Field {
 			for (int x = 0; x < table.width; x++) {
 				Tile tile = table.get(x, y);
 				tile.targetColor.set(getTargetColor(template, x, y));
+				tile.drawing = true;
+				tile.dropped = false;
+				tile.spriteRotation = 0f;
+				tile.setSize(1, 1);
 			}
 		}
 		fadeIn();

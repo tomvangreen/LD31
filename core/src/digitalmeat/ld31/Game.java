@@ -6,6 +6,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -71,15 +72,27 @@ public class Game extends ApplicationAdapter {
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
 
-		// createIntroSequence();
+		createIntroSequence();
 
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
-		levelKeys.add("level-intro.png");
-		levelKeys.add("level-02.png");
-		levelKeys.add("level-food.png");
-		levelKeys.add("level-03.png");
+		if (externalLevels != null) {
+			FileHandle folder = Gdx.files.local(externalLevels);
+			if (folder.exists() && folder.isDirectory()) {
+				for (FileHandle file : folder.list()) {
+					if ("png".equalsIgnoreCase(file.extension())) {
+						levelKeys.add(file.path());
+					}
+				}
+			}
+
+		} else {
+			levelKeys.add("level-intro.png");
+			levelKeys.add("level-02.png");
+			levelKeys.add("level-food.png");
+			levelKeys.add("level-03.png");
+		}
 		for (String key : levelKeys) {
-			levels.load(key, key);
+			levels.load(key, key, externalLevels != null);
 		}
 
 		float scaleDown = 1f;
@@ -275,6 +288,7 @@ public class Game extends ApplicationAdapter {
 			if (tile != null && tile.type == TileType.Goal && foodFound == currentLevel.foodTiles) {
 				currentLevel = null;
 				currentLevelIndex++;
+				playerActor.addAction(Actions.color(OFF_COLOR, TILE_FADE_DURATION));
 				started = false;
 			}
 		}
@@ -320,6 +334,7 @@ public class Game extends ApplicationAdapter {
 
 	float startTimer = 0;
 	int foodFound = 0;
+	public String externalLevels;
 
 	public void startLevel() {
 		Gdx.app.log("Game", "StartLevel(" + currentLevelIndex + ")");
@@ -361,7 +376,7 @@ public class Game extends ApplicationAdapter {
 	// public final static Color ON_COLOR = new Color(Color.WHITE);
 
 	public final static Color ON_COLOR = new Color(0, 0, 0, 0);
-	public final static Color OFF_COLOR = new Color(Color.WHITE);
+	public final static Color OFF_COLOR = new Color(1, 1, 1, 0);
 
 	public static class KeyAndDelay {
 		String key;

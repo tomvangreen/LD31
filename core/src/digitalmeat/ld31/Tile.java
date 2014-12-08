@@ -111,7 +111,16 @@ public class Tile extends Actor {
 	}
 
 	public static enum TileType {
-		Empty(false), Walkable(true), Start(true, Color.BLUE), Food(true, Color.GREEN), Key(true, Color.YELLOW), Door(true, Color.RED, true), Goal(true, Color.CYAN);
+		//@formatter:off
+		Empty(false)
+		, Walkable(true)
+		, Start(true, Color.BLUE)
+		, Food(true, Color.GREEN)
+		, Key(true, Color.YELLOW)
+		, Door(true, Color.RED, true)
+		, Goal(true, Color.CYAN)
+		;
+		//@formatter:on
 		public final boolean walkable;
 		public final boolean locked;
 		public final Color color;

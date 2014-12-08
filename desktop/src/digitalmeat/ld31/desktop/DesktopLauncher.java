@@ -12,6 +12,10 @@ public class DesktopLauncher {
 		config.height = Game.VIEWPORT_HEIGHT;
 		config.foregroundFPS = 60;
 		config.backgroundFPS = -1;
-		new LwjglApplication(new Game(), config);
+		Game listener = new Game();
+		if (arg.length > 0) {
+			listener.externalLevels = arg[0];
+		}
+		new LwjglApplication(listener, config);
 	}
 }

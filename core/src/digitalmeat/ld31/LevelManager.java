@@ -6,6 +6,7 @@ import java.util.Map;
 import ch.digitalmeat.util.Point;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 
@@ -25,8 +26,9 @@ public class LevelManager {
 		this.height = height;
 	}
 
-	public void load(String key, String file) {
-		Pixmap pixmap = new Pixmap(Gdx.files.internal(file));
+	public void load(String key, String file, boolean external) {
+		FileHandle handle = external ? Gdx.files.local(file) : Gdx.files.internal(file);
+		Pixmap pixmap = new Pixmap(handle);
 		int endX = Math.min(width, pixmap.getWidth());
 		int endY = Math.min(height, pixmap.getHeight());
 		Level level = new Level(width, height);
