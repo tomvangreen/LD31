@@ -25,7 +25,7 @@ import eu32k.libgdx.rendering.AdvancedShader;
 import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
 public class Game extends ApplicationAdapter {
-	boolean sequences = false;
+	boolean sequences = true;
 	boolean spritesDisabled;
 	SpriteBatch batch;
 	Texture tile;
@@ -49,6 +49,8 @@ public class Game extends ApplicationAdapter {
 	private AdvancedShader horizontalBlur;
 	public Music theme;
 	SoundManager sounds = new SoundManager();
+
+	private Stats stats = new Stats();
 
 	@Override
 	public void create() {
@@ -99,17 +101,22 @@ public class Game extends ApplicationAdapter {
 			}
 
 		} else {
-			addLevel("01-intro-level");
-			addLevel("02-reset-button");
-			addLevel("03-food");
-			addLevel("04-get-all-food");
-			addLevel("05-introducing-keys-01");
-			addLevel("05-introducing-keys-02");
-			addLevel("10-medium-01-bigger-lock");
-			addLevel("10-medium-02-cthulhu");
-			addLevel("20-hard-01");
-			addLevel("20-hard-02");
-			addLevel("99-bonuz");
+			// addLevel("01-intro-level");
+			// addLevel("02-reset-button");
+			// addLevel("03-food");
+			// addLevel("04-get-all-food");
+			// addLevel("05-introducing-keys-01");
+			// addLevel("05-introducing-keys-02");
+			// addLevel("05-introducing-keys-03");
+			// addLevel("10-medium-01-bigger-lock");
+			// addLevel("10-medium-02-cthulhu");
+			// addLevel("20-hard-01");
+			// addLevel("20-hard-02");
+			// addLevel("20-hard-03");
+			// addLevel("20-hard-04");
+			addLevel("20-hard-05");
+			// addLevel("99-bonuz");
+			// addLevel("99-bonuz-02");
 		}
 		for (String key : levelKeys) {
 			levels.load(key, key, externalLevels != null);
