@@ -25,7 +25,7 @@ import eu32k.libgdx.rendering.AdvancedShader;
 import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
 public class Game extends ApplicationAdapter {
-	boolean sequences = true;
+	boolean sequences = false;
 	SpriteBatch batch;
 	Texture tile;
 	Texture player;
@@ -263,9 +263,12 @@ public class Game extends ApplicationAdapter {
 					startLevel();
 				}
 			} else if (startTimerOn) {
+				field.drawIcons = false;
 				startTimer -= deltaTime;
 				if (startTimer < 0) {
 					playerActor.alive = true;
+					field.drawIcons = true;
+
 					startTimerOn = false;
 				}
 			}
@@ -319,6 +322,7 @@ public class Game extends ApplicationAdapter {
 					} else if (leaving.type == TileType.Key) {
 						sounds.playKeySound();
 						foundKeys++;
+						field.unlocked = currentLevel.keys == foundKeys;
 						if (foundKeys == currentLevel.keys) {
 							for (Point lockPosition : currentLevel.locked) {
 								Tile tile = field.table.get(lockPosition.x, lockPosition.y);
@@ -338,6 +342,7 @@ public class Game extends ApplicationAdapter {
 			}
 			Tile tile = field.table.get(tempPoint.x, tempPoint.y);
 			if (tile != null && tile.type == TileType.Goal && foodFound == currentLevel.foodTiles) {
+				field.drawIcons = false;
 				currentLevel = null;
 				currentLevelIndex++;
 				sounds.playWinSound();
@@ -414,7 +419,9 @@ public class Game extends ApplicationAdapter {
 		//@formatter:on
 		startTimer = FIELD_DELAY;
 		startTimerOn = true;
+		field.unlocked = currentLevel.keys == foundKeys;
 		started = true;
+
 	}
 
 	public final static int VIEWPORT_WIDTH = 1280;

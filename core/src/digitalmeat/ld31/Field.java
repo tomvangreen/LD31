@@ -5,6 +5,7 @@ import ch.digitalmeat.grid.util.Table;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
@@ -17,6 +18,13 @@ public class Field {
 	public final Texture field;
 	public final TemplateManager templates;
 
+	public Sprite goal;
+	public Sprite food;
+	public Sprite key;
+	public Sprite lock;
+	public boolean unlocked;
+	public boolean drawIcons;
+
 	public Field(TemplateManager templates, Texture field, int width, int height) {
 		this.templates = templates;
 		this.field = field;
@@ -24,11 +32,17 @@ public class Field {
 	}
 
 	public Group createGroup() {
+		goal = new Sprite(new Texture("goal.png"));
+		food = new Sprite(new Texture("food.png"));
+		key = new Sprite(new Texture("key.png"));
+		lock = new Sprite(new Texture("lock.png"));
+
+		// ///
 		Group group = new Group();
 		for (int y = 0; y < table.height; y++) {
 			for (int x = 0; x < table.width; x++) {
 				float delay = calculateDelay(x, y);
-				Tile tile = new Tile(field);
+				Tile tile = new Tile(field, this);
 				tile.fieldPosition.set(x, y);
 				tile.setSize(1, 1);
 				tile.setPosition(x, y);

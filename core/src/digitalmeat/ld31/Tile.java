@@ -21,10 +21,12 @@ public class Tile extends Actor {
 	public final Color tempColor = new Color();
 	public TileType type = TileType.Empty;
 	public boolean dropped;
+	private Field field;
 
-	public Tile(Texture texture) {
+	public Tile(Texture texture, Field field) {
 		this.sprite = new Sprite(texture);
 		setColor(Game.OFF_COLOR);
+		this.field = field;
 	}
 
 	public Action createPulse() {
@@ -109,14 +111,44 @@ public class Tile extends Actor {
 			float height = getHeight();
 			float x = getX() + (1 - width) / 2;
 			float y = getY() + (1 - height) / 2;
-			sprite.setPosition(x, y);
-			sprite.setRotation(spriteRotation);
-			sprite.setSize(width, height);
-			sprite.setColor(getColor());
-			sprite.setOriginCenter();
-			sprite.setScale(getScaleX(), getScaleY());
-			sprite.draw(batch, parentAlpha);
+			drawSprite(batch, parentAlpha, width, height, x, y, sprite, getColor());
+			if (field.drawIcons) {
+				drawIcons(batch, parentAlpha, width, height, x, y);
+			}
 		}
+	}
+
+	public void drawIcons(Batch batch, float parentAlpha, float width, float height, float x, float y) {
+		tempColor.set(Color.WHITE);
+		tempColor.a = 0.7f * getColor().a;
+		switch (type) {
+		case Food:
+			drawSprite(batch, parentAlpha, width, height, x, y, field.food, tempColor);
+			break;
+		case Goal:
+			drawSprite(batch, parentAlpha, width, height, x, y, field.goal, tempColor);
+			break;
+		case Key:
+			drawSprite(batch, parentAlpha, width, height, x, y, field.key, tempColor);
+			break;
+		case Door:
+			if (!field.unlocked) {
+				drawSprite(batch, parentAlpha, width, height, x, y, field.lock, tempColor);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public void drawSprite(Batch batch, float parentAlpha, float width, float height, float x, float y, Sprite sprite, Color color) {
+		sprite.setPosition(x, y);
+		sprite.setRotation(spriteRotation);
+		sprite.setSize(width, height);
+		sprite.setColor(color);
+		sprite.setOriginCenter();
+		sprite.setScale(getScaleX(), getScaleY());
+		sprite.draw(batch, parentAlpha);
 	}
 
 	public static enum TileType {
