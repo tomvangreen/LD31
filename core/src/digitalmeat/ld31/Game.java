@@ -71,7 +71,7 @@ public class Game extends ApplicationAdapter {
 		stage.addActor(playerActor);
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
-
+		Gdx.input.setInputProcessor(plexer);
 		createIntroSequence();
 
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
@@ -90,6 +90,7 @@ public class Game extends ApplicationAdapter {
 			levelKeys.add("level-02.png");
 			levelKeys.add("level-food.png");
 			levelKeys.add("level-03.png");
+			levelKeys.add("introducing keys.png");
 		}
 		for (String key : levelKeys) {
 			levels.load(key, key, externalLevels != null);
@@ -207,6 +208,7 @@ public class Game extends ApplicationAdapter {
 	}
 
 	private final Vector2 move = new Vector2();
+	private int foundKeys;
 
 	public void act() {
 		float deltaTime = Gdx.graphics.getDeltaTime();
@@ -246,7 +248,7 @@ public class Game extends ApplicationAdapter {
 							tempPoint.x--;
 						}
 						Tile tile = field.table.get(tempPoint.x, tempPoint.y);
-						if (tile != null && tile.type.walkable && !tile.dropped) {
+						if (canMoveToTile(tile)) {
 							playerActor.targetPoint.set(tempPoint);
 							playerActor.transporting = true;
 						}
@@ -258,7 +260,7 @@ public class Game extends ApplicationAdapter {
 							tempPoint.y--;
 						}
 						Tile tile = field.table.get(tempPoint.x, tempPoint.y);
-						if (tile != null && tile.type.walkable && !tile.dropped) {
+						if (canMoveToTile(tile)) {
 							playerActor.targetPoint.set(tempPoint);
 							playerActor.transporting = true;
 						}
@@ -280,6 +282,18 @@ public class Game extends ApplicationAdapter {
 					}
 					if (leaving.type == TileType.Food) {
 						foodFound++;
+					} else if (leaving.type == TileType.Key) {
+						foundKeys++;
+						if (foundKeys == currentLevel.keys) {
+							for (Point lockPosition : currentLevel.locked) {
+								Tile tile = field.table.get(lockPosition.x, lockPosition.y);
+								if (tile != null) {
+									tile.clearActions();
+									tile.targetColor.set(ON_COLOR);
+									tile.addAction(tile.createPulse());
+								}
+							}
+						}
 					}
 				}
 
@@ -292,6 +306,10 @@ public class Game extends ApplicationAdapter {
 				started = false;
 			}
 		}
+	}
+
+	public boolean canMoveToTile(Tile tile) {
+		return tile != null && tile.type.walkable && !tile.dropped && (tile.type != TileType.Door || foundKeys == currentLevel.keys);
 	}
 
 	final Point tempPoint = new Point();
@@ -341,6 +359,7 @@ public class Game extends ApplicationAdapter {
 		currentLevel = levels.levels.get(levelKeys.get(currentLevelIndex));
 		field.loadLevel(currentLevel);
 		foodFound = 0;
+		foundKeys = 0;
 		playerActor.setSize(1, 1);
 		//@formatter:off
 		playerActor.addAction(
@@ -357,7 +376,7 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public final static int VIEWPORT_WIDTH = 1280;
-	public final static int VIEWPORT_HEIGHT = 700;
+	public final static int VIEWPORT_HEIGHT = 720;
 	public final static int TILESCREEN_WIDTH = 32;
 	public final static int TILESCREEN_HEIGHT = 20;
 	public static final float X_DELAY = 0.03f;
@@ -365,7 +384,7 @@ public class Game extends ApplicationAdapter {
 	public static final float X_DELAY_TOTAL = TILESCREEN_WIDTH * X_DELAY;
 	public static final float Y_DELAY_TOTAL = TILESCREEN_HEIGHT * Y_DELAY;
 	public static final float TILE_FADE_DURATION = 1f;
-	public static final float TILE_PULSE_DURATION = 0.5f;
+	public static final float TILE_PULSE_DURATION = 1.5f;
 	public static final float TILE_DROP_DURATION = 0.5f;
 	public static final float TILE_PULSE_OFFSET = 0.05f;
 	public static final float FIELD_DELAY = Math.max(X_DELAY_TOTAL, Y_DELAY_TOTAL) + TILE_FADE_DURATION + TILE_PULSE_DURATION;
@@ -375,7 +394,7 @@ public class Game extends ApplicationAdapter {
 	// public final static Color OFF_COLOR = new Color(0, 0, 0, 0);
 	// public final static Color ON_COLOR = new Color(Color.WHITE);
 
-	public final static Color ON_COLOR = new Color(0, 0, 0, 0);
+	public final static Color ON_COLOR = new Color(0, 0, 0, 1);
 	public final static Color OFF_COLOR = new Color(1, 1, 1, 0);
 
 	public static class KeyAndDelay {

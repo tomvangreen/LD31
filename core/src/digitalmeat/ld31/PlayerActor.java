@@ -38,7 +38,7 @@ public class PlayerActor extends Actor {
 			v.scl(deltaTime * Game.PLAYER_MOVE_SPEED);
 			setPosition(getX() + v.x, getY() + v.y);
 			v.set(getX(), getY()).sub(targetPoint.x, targetPoint.y);
-			if (v.len() < 0.025f) {
+			if (v.len() < 0.05f) {
 				transporting = false;
 			}
 		}

@@ -28,20 +28,29 @@ public class Tile extends Actor {
 	}
 
 	public Action createPulse() {
-		tempColor.set(targetColor);
+		float stepDuration = Game.TILE_PULSE_DURATION / 2;
 		float offset = Game.TILE_PULSE_OFFSET;
 		if (Game.ON_COLOR.r > Game.OFF_COLOR.r) {
 			offset *= -1;
 		}
-		tempColor.r = Math.min(1f, tempColor.r + offset);
-		tempColor.g = Math.min(1f, tempColor.g + offset);
-		tempColor.b = Math.min(1f, tempColor.b + offset);
-		tempColor.a = Math.min(1f, tempColor.a + offset);
+		if (type == TileType.Empty || type == TileType.Walkable) {
+			tempColor.set(targetColor);
+			tempColor.r = Math.min(1f, tempColor.r + offset);
+			tempColor.g = Math.min(1f, tempColor.g + offset);
+			tempColor.b = Math.min(1f, tempColor.b + offset);
+			tempColor.a = Math.min(1f, tempColor.a + offset);
+		} else {
+			tempColor.set(targetColor);
+			tempColor.r /= 2;
+			tempColor.g /= 2;
+			tempColor.b /= 2;
+			// stepDuration /= 2;
+		}
 		//@formatter:off
 		return Actions.forever(
 			Actions.sequence(
-				Actions.color(tempColor, Game.TILE_PULSE_DURATION / 2)
-				, Actions.color(targetColor, Game.TILE_PULSE_DURATION / 2)
+				Actions.color(tempColor, stepDuration)
+				, Actions.color(targetColor, stepDuration)
 			)
 		);
 		//@formatter:on

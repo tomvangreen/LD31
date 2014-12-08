@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import digitalmeat.ld31.Level.TileConfig;
 import digitalmeat.ld31.TemplateManager.Template;
+import digitalmeat.ld31.Tile.TileType;
 
 public class Field {
 	public final Table<Tile> table;
@@ -81,6 +82,7 @@ public class Field {
 			for (int x = 0; x < table.width; x++) {
 				Tile tile = table.get(x, y);
 				tile.targetColor.set(getTargetColor(template, x, y));
+				tile.type = TileType.Empty;
 				tile.drawing = true;
 				tile.dropped = false;
 				tile.spriteRotation = 0f;
