@@ -35,6 +35,9 @@ public class GameInputProcessor implements InputProcessor {
 			} else {
 				game.theme.play();
 			}
+		} else if (keycode == Keys.I) {
+			game.field.drawIcons = game.spritesDisabled;
+			game.spritesDisabled = !game.spritesDisabled;
 		}
 		return false;
 	}

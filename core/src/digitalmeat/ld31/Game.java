@@ -26,6 +26,7 @@ import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
 public class Game extends ApplicationAdapter {
 	boolean sequences = false;
+	boolean spritesDisabled;
 	SpriteBatch batch;
 	Texture tile;
 	Texture player;
@@ -267,7 +268,7 @@ public class Game extends ApplicationAdapter {
 				startTimer -= deltaTime;
 				if (startTimer < 0) {
 					playerActor.alive = true;
-					field.drawIcons = true;
+					field.drawIcons = !spritesDisabled;
 
 					startTimerOn = false;
 				}
