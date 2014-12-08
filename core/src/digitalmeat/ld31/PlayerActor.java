@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class PlayerActor extends Actor {
 	public final Sprite sprite;
@@ -52,4 +54,24 @@ public class PlayerActor extends Actor {
 		sprite.setColor(getColor());
 		sprite.draw(batch, parentAlpha);
 	}
+
+	private final Color tempColor = new Color();
+
+	public Action createPulse() {
+		float stepDuration = Game.TILE_PULSE_DURATION / 2;
+		float offset = Game.TILE_PULSE_OFFSET;
+		//@formatter:off
+		return Actions.forever(
+			Actions.sequence(
+				Actions.color(Color.BLUE, stepDuration)
+				, Actions.color(Color.PURPLE, stepDuration)
+				, Actions.color(Color.RED, stepDuration)
+				, Actions.color(Color.YELLOW, stepDuration)
+				, Actions.color(Color.GREEN, stepDuration)
+				, Actions.color(Color.CYAN, stepDuration)
+			)
+		);
+		//@formatter:on
+	}
+
 }

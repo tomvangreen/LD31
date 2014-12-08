@@ -383,7 +383,8 @@ public class Game extends ApplicationAdapter {
 			Actions.sequence(
 				Actions.alpha(0f, FIELD_DELAY / 2)
 				, Actions.moveTo(currentLevel.start.x, currentLevel.start.y)
-				, Actions.color(Color.BLUE, FIELD_DELAY / 2)
+//				, Actions.color(Color.BLUE, FIELD_DELAY / 2)
+				, playerActor.createPulse()
 			)
 		);
 		//@formatter:on
