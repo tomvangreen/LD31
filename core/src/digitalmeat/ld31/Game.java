@@ -6,6 +6,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -45,9 +46,15 @@ public class Game extends ApplicationAdapter {
 	private AdvancedShader verticalBlur;
 	private DynamicFrameBuffer blurBuffer2;
 	private AdvancedShader horizontalBlur;
+	public Music theme;
+	SoundManager sounds = new SoundManager();
 
 	@Override
 	public void create() {
+		sounds.create();
+		theme = Gdx.audio.newMusic(Gdx.files.internal("ld31-theme-02.ogg"));
+		theme.setLooping(true);
+		theme.play();
 		cam = new OrthographicCamera(TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		viewport = new FitViewport(TILESCREEN_WIDTH, TILESCREEN_HEIGHT, cam);
 		batch = new SpriteBatch();
@@ -298,7 +305,9 @@ public class Game extends ApplicationAdapter {
 					}
 					if (leaving.type == TileType.Food) {
 						foodFound++;
+						sounds.playFoodSound();
 					} else if (leaving.type == TileType.Key) {
+						sounds.playKeySound();
 						foundKeys++;
 						if (foundKeys == currentLevel.keys) {
 							for (Point lockPosition : currentLevel.locked) {
@@ -310,7 +319,10 @@ public class Game extends ApplicationAdapter {
 								}
 							}
 						}
+					} else {
+						sounds.playEmptySound();
 					}
+
 				}
 
 			}
@@ -318,6 +330,7 @@ public class Game extends ApplicationAdapter {
 			if (tile != null && tile.type == TileType.Goal && foodFound == currentLevel.foodTiles) {
 				currentLevel = null;
 				currentLevelIndex++;
+				sounds.playWinSound();
 				// playerActor.addAction(Actions.color(OFF_COLOR,
 				// TILE_FADE_DURATION));
 				started = false;
@@ -347,6 +360,7 @@ public class Game extends ApplicationAdapter {
 		if (Gdx.input.isKeyPressed(Keys.R)) {
 
 			move.set(0, 0);
+			sounds.playResetSound();
 			currentLevel = null;
 			started = false;
 		}

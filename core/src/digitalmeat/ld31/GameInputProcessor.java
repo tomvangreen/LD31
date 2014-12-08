@@ -29,6 +29,12 @@ public class GameInputProcessor implements InputProcessor {
 			// }
 			Gdx.app.log("GameInputProcessor", "Changing fullscreen to: " + viewportWidth + "x" + viewportHeight + (fullscreen ? " fullscreen" : ""));
 			Gdx.graphics.setDisplayMode(viewportWidth, viewportHeight, fullscreen);
+		} else if (keycode == Keys.M) {
+			if (game.theme.isPlaying()) {
+				game.theme.pause();
+			} else {
+				game.theme.play();
+			}
 		}
 		return false;
 	}
