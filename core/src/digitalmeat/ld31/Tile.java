@@ -156,7 +156,7 @@ public class Tile extends Actor {
 			}
 			TileType type = typeMap.get(color);
 			if (type == null) {
-				type = color.a == 0 ? TileType.Empty : TileType.Walkable;
+				type = color.a <= 0.5f ? TileType.Empty : TileType.Walkable;
 			}
 			return type;
 		}

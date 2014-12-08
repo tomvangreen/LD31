@@ -24,6 +24,7 @@ import eu32k.libgdx.rendering.AdvancedShader;
 import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
 public class Game extends ApplicationAdapter {
+	boolean sequences = false;
 	SpriteBatch batch;
 	Texture tile;
 	Texture player;
@@ -54,6 +55,10 @@ public class Game extends ApplicationAdapter {
 		player = new Texture("player.png");
 		TemplateManager templates = new TemplateManager(TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		templates.load("title", "title.png");
+		templates.load("pr1", "pixelrun.png");
+		templates.load("pr2", "pixelrun2.png");
+		templates.load("pr3", "pixelrun3.png");
+		templates.load("pr4", "pixelrun4.png");
 		templates.load("entire", "title_entire.png");
 		templates.load("game", "title_game.png");
 		templates.load("entire_game", "title_entire_game.png");
@@ -110,7 +115,14 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void createIntroSequence() {
+		if (!sequences) {
+			return;
+		}
 		fades.add(new KeyAndDelay("title", 0.5f));
+		fades.add(new KeyAndDelay("pr4", 3f));
+		fades.add(new KeyAndDelay("pr3", 1f));
+		fades.add(new KeyAndDelay("pr2", 4f));
+		fades.add(new KeyAndDelay("pr1", 1f));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("entire_game", 3f));
 		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
@@ -127,10 +139,14 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void createOutroSequence() {
+		if (!sequences) {
+			return;
+		}
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("c1", 3f));
 		fades.add(new KeyAndDelay("c2", 3f));
 		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay(null, 1f));
 	}
 
 	@Override
@@ -302,7 +318,8 @@ public class Game extends ApplicationAdapter {
 			if (tile != null && tile.type == TileType.Goal && foodFound == currentLevel.foodTiles) {
 				currentLevel = null;
 				currentLevelIndex++;
-				playerActor.addAction(Actions.color(OFF_COLOR, TILE_FADE_DURATION));
+				// playerActor.addAction(Actions.color(OFF_COLOR,
+				// TILE_FADE_DURATION));
 				started = false;
 			}
 		}

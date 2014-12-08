@@ -58,6 +58,25 @@ public class Field {
 		}
 	}
 
+	public void fadeTo() {
+		for (int y = 0; y < table.height; y++) {
+			for (int x = 0; x < table.width; x++) {
+				float delay = calculateDelay(x, y);
+				Tile tile = table.get(x, y);
+				tile.clearActions();
+				//@formatter:off
+				tile.addAction(
+						Actions.sequence(
+								Actions.color(tile.targetColor, delay)
+								, tile.createPulse()
+							
+						)
+				);
+				//@formatter:on
+			}
+		}
+	}
+
 	public void fadeOut() {
 		for (int y = 0; y < table.height; y++) {
 			for (int x = 0; x < table.width; x++) {
@@ -89,7 +108,7 @@ public class Field {
 				tile.setSize(1, 1);
 			}
 		}
-		fadeIn();
+		fadeTo();
 	}
 
 	public void loadLevel(Level level) {
