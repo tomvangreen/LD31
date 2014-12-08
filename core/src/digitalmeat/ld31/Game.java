@@ -25,7 +25,7 @@ import eu32k.libgdx.rendering.AdvancedShader;
 import eu32k.libgdx.rendering.DynamicFrameBuffer;
 
 public class Game extends ApplicationAdapter {
-	boolean sequences = false;
+	boolean sequences = true;
 	SpriteBatch batch;
 	Texture tile;
 	Texture player;
@@ -98,11 +98,17 @@ public class Game extends ApplicationAdapter {
 			}
 
 		} else {
-			levelKeys.add("level-intro.png");
-			levelKeys.add("level-02.png");
-			levelKeys.add("level-food.png");
-			levelKeys.add("level-03.png");
-			levelKeys.add("introducing keys.png");
+			addLevel("01-intro-level");
+			addLevel("02-reset-button");
+			addLevel("03-food");
+			addLevel("04-get-all-food");
+			addLevel("05-introducing-keys-01");
+			addLevel("05-introducing-keys-02");
+			addLevel("10-medium-01-bigger-lock");
+			addLevel("10-medium-02-cthulhu");
+			addLevel("20-hard-01");
+			addLevel("20-hard-02");
+			addLevel("99-bonuz");
 		}
 		for (String key : levelKeys) {
 			levels.load(key, key, externalLevels != null);
@@ -119,6 +125,10 @@ public class Game extends ApplicationAdapter {
 		blurBuffer2 = new DynamicFrameBuffer(scaleDown);
 		horizontalBlur = new AdvancedShader(Gdx.files.internal("shaders/simple.vsh").readString(), Gdx.files.internal("shaders/blur_h.fsh").readString());
 
+	}
+
+	public void addLevel(String key) {
+		levelKeys.add("levels/" + key + ".png");
 	}
 
 	public void createIntroSequence() {
