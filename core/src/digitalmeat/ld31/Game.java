@@ -113,6 +113,7 @@ public class Game extends ApplicationAdapter {
 			addLevel("05-introducing-keys-01");
 			addLevel("05-introducing-keys-02");
 			addLevel("05-introducing-keys-03");
+			addLevel("05-introducing-keys-04");
 			addLevel("10-medium-01-bigger-lock");
 			addLevel("10-medium-02-cthulhu");
 			addLevel("20-hard-01");
