@@ -76,8 +76,12 @@ public class Game extends ApplicationAdapter {
 		templates.load("on", "title_on.png");
 		templates.load("one", "title_one.png");
 		templates.load("screen", "title_screen.png");
-		templates.load("c1", "credits-grats.png");
-		templates.load("c2", "credits-madeby.png");
+		templates.load("c1", "credits-grats2.png");
+		templates.load("c2", "credits-grats.png");
+		templates.load("c3", "credits-madeby.png");
+		templates.load("c4", "special-thanks.png");
+		templates.load("c5", "to-cthulhu.png");
+		templates.load("c6", "for-map.png");
 
 		field = new Field(templates, tile, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
 		stage = new Stage(viewport);
@@ -87,6 +91,7 @@ public class Game extends ApplicationAdapter {
 		plexer.addProcessor(stage);
 		plexer.addProcessor(new GameInputProcessor(this));
 		Gdx.input.setInputProcessor(plexer);
+
 		createIntroSequence();
 
 		levels = new LevelManager(field, TILESCREEN_WIDTH, TILESCREEN_HEIGHT);
@@ -101,22 +106,22 @@ public class Game extends ApplicationAdapter {
 			}
 
 		} else {
-			// addLevel("01-intro-level");
-			// addLevel("02-reset-button");
-			// addLevel("03-food");
-			// addLevel("04-get-all-food");
-			// addLevel("05-introducing-keys-01");
-			// addLevel("05-introducing-keys-02");
-			// addLevel("05-introducing-keys-03");
-			// addLevel("10-medium-01-bigger-lock");
-			// addLevel("10-medium-02-cthulhu");
-			// addLevel("20-hard-01");
-			// addLevel("20-hard-02");
-			// addLevel("20-hard-03");
-			// addLevel("20-hard-04");
+			addLevel("01-intro-level");
+			addLevel("02-reset-button");
+			addLevel("03-food");
+			addLevel("04-get-all-food");
+			addLevel("05-introducing-keys-01");
+			addLevel("05-introducing-keys-02");
+			addLevel("05-introducing-keys-03");
+			addLevel("10-medium-01-bigger-lock");
+			addLevel("10-medium-02-cthulhu");
+			addLevel("20-hard-01");
+			addLevel("20-hard-02");
+			addLevel("20-hard-03");
+			addLevel("20-hard-04");
 			addLevel("20-hard-05");
-			// addLevel("99-bonuz");
-			// addLevel("99-bonuz-02");
+			addLevel("99-bonuz-02");
+			addLevel("99-bonuz");
 		}
 		for (String key : levelKeys) {
 			levels.load(key, key, externalLevels != null);
@@ -143,14 +148,16 @@ public class Game extends ApplicationAdapter {
 		if (!sequences) {
 			return;
 		}
-		fades.add(new KeyAndDelay("title", 0.5f));
-		fades.add(new KeyAndDelay("pr4", 3f));
-		fades.add(new KeyAndDelay("pr3", 1f));
-		fades.add(new KeyAndDelay("pr2", 4f));
-		fades.add(new KeyAndDelay("pr1", 1f));
+		fades.add(new KeyAndDelay(null, 1f));
+		fades.add(new KeyAndDelay("title", 0.5f, true));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay("entire_game", 3f));
-		fades.add(new KeyAndDelay("on_one_screen", 2.5f));
+		fades.add(new KeyAndDelay("on_one_screen", 2.5f, true));
+		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay("pr4", 3f, true));
+		fades.add(new KeyAndDelay("pr3", 1.8f, true));
+		fades.add(new KeyAndDelay("pr2", 3f));
+		fades.add(new KeyAndDelay("pr1", 1.8f));
 		fades.add(new KeyAndDelay(null, 3f));
 		Gdx.app.log("Game", "Delay: " + FIELD_DELAY);
 		fades.add(new KeyAndDelay(null, FIELD_DELAY));
@@ -167,9 +174,14 @@ public class Game extends ApplicationAdapter {
 		if (!sequences) {
 			return;
 		}
-		fades.add(new KeyAndDelay(null, 3f));
+		fades.add(new KeyAndDelay(null, 1.5f));
 		fades.add(new KeyAndDelay("c1", 3f));
 		fades.add(new KeyAndDelay("c2", 3f));
+		fades.add(new KeyAndDelay("pr4", 3f));
+		fades.add(new KeyAndDelay("c3", 2f));
+		fades.add(new KeyAndDelay("c4", 4f));
+		fades.add(new KeyAndDelay("c5", 3f));
+		fades.add(new KeyAndDelay("c6", 3f));
 		fades.add(new KeyAndDelay(null, 3f));
 		fades.add(new KeyAndDelay(null, 1f));
 	}
@@ -276,7 +288,7 @@ public class Game extends ApplicationAdapter {
 				if (startTimer < 0) {
 					playerActor.alive = true;
 					field.drawIcons = !spritesDisabled;
-
+					sounds.playStartSound();
 					startTimerOn = false;
 				}
 			}
@@ -394,7 +406,7 @@ public class Game extends ApplicationAdapter {
 		if (timer > template.delay) {
 			if (template.key != null) {
 				Gdx.app.log("Game", "LoadTemplate");
-				field.loadTemplate(template.key);
+				field.loadTemplate(template.key, template.fadeIn);
 			} else {
 				Gdx.app.log("Game", "FadeOut");
 				field.fadeOut();
@@ -455,10 +467,15 @@ public class Game extends ApplicationAdapter {
 	public final static Color OFF_COLOR = new Color(1, 1, 1, 0);
 
 	public static class KeyAndDelay {
+		public boolean fadeIn;
 		String key;
 		float delay;
 
 		public KeyAndDelay(String key, float delay) {
+			this(key, delay, false);
+		}
+
+		public KeyAndDelay(String key, float delay, boolean fadeIn) {
 			this.key = key;
 			this.delay = delay;
 		}

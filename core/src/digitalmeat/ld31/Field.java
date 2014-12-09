@@ -109,7 +109,7 @@ public class Field {
 		}
 	}
 
-	public void loadTemplate(String key) {
+	public void loadTemplate(String key, boolean fadeIn) {
 		Template template = templates.getTemplate(key);
 		for (int y = 0; y < table.height; y++) {
 			for (int x = 0; x < table.width; x++) {
@@ -122,7 +122,11 @@ public class Field {
 				tile.setSize(1, 1);
 			}
 		}
-		fadeTo();
+		if (fadeIn) {
+			fadeIn();
+		} else {
+			fadeTo();
+		}
 	}
 
 	public void loadLevel(Level level) {

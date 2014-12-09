@@ -11,6 +11,7 @@ public class SoundManager {
 	private Sound key;
 	private Sound reset;
 	private Sound win;
+	private Sound start;
 
 	public void create() {
 		int sounds = 6;
@@ -21,6 +22,7 @@ public class SoundManager {
 		key = Gdx.audio.newSound(Gdx.files.internal("sfx/key.wav"));
 		reset = Gdx.audio.newSound(Gdx.files.internal("sfx/reset.wav"));
 		win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
+		start = Gdx.audio.newSound(Gdx.files.internal("sfx/start.wav"));
 	}
 
 	public void playEmptySound() {
@@ -32,6 +34,10 @@ public class SoundManager {
 
 	public void playWinSound() {
 		playSound(win);
+	}
+
+	public void playStartSound() {
+		playSound(start);
 	}
 
 	public void playResetSound() {
